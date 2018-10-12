@@ -1,4 +1,4 @@
-function encode_string_literal(buf::IOBuffer, data::Array{UInt8}; huffman=true)
+function encode_string_literal(buf::IOBuffer, data::Base.CodeUnits{UInt8}; huffman=true)
     mask::UInt8 = 0x0
     if huffman
         mask = 0x80
@@ -30,25 +30,25 @@ function encode_totally_indexed(buf::IOBuffer, index::UInt8; options...)
     write(buf, mask | index)
 end
 
-function find_totally_indexed(name::Array{UInt8, 1}, value::Array{UInt8, 1})
+function find_totally_indexed(name::Base.CodeUnits{UInt8}, value::Base.CodeUnits{UInt8})::Union{UInt8, Nothing}
     for i = 1:length(STATIC_TABLE)
         if STATIC_TABLE[i][1] == name && STATIC_TABLE[i][2] == value
-            return Nullable(UInt8(i))
+            return UInt8(i)
         end
     end
-    return Nullable{UInt8}()
+    return nothing
 end
 
 function encode(table::DynamicTable, headers::Headers; options...)
     buf = IOBuffer()
     for header in sort(collect(headers))
-        index = find_totally_indexed(convert(Array{UInt8, 1}, header[1]),
-                                     convert(Array{UInt8, 1}, header[2]))
-        if isnull(index)
-            encode_literal(buf, (convert(Array{UInt8, 1}, header[1]),
-                                 convert(Array{UInt8, 1}, header[2])); options...)
+        index = find_totally_indexed(codeunits(header[1]),
+                                     codeunits(header[2]))
+        if index == nothing
+            encode_literal(buf, (codeunits(header[1]),
+                                 codeunits(header[2])); options...)
         else
-            encode_totally_indexed(buf, index.value; options...)
+            encode_totally_indexed(buf, index; options...)
         end
     end
 

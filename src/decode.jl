@@ -36,7 +36,8 @@ function decode_string(buf::IOBuffer)
         str = huffman_decode_bytes(str)
     end
 
-    return str
+    # convert to CodeUnits
+    return codeunits(String(str))
 end
 
 function decode_literal(table::DynamicTable, buf::IOBuffer, index::Bool)
