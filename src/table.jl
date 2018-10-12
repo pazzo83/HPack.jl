@@ -1,7 +1,7 @@
-typealias HeaderBinary Tuple{Array{UInt8, 1}, Array{UInt8, 1}}
-typealias Header Tuple{AbstractString, AbstractString}
+const HeaderBinary = Tuple{Array{UInt8, 1}, Array{UInt8, 1}}
+const Header = Tuple{String, String}
 
-type DynamicTable
+mutable struct DynamicTable
     table::Array{HeaderBinary, 1}
     size::Int
     max_size::Int

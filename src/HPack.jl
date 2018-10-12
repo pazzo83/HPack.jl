@@ -4,8 +4,8 @@ using Compat
 
 import HttpCommon: Headers
 
-type DecodeError <: Exception
-    message::AbstractString
+struct DecodeError <: Exception
+    message::String
 end
 
 # package code goes here
